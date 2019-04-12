@@ -1,0 +1,100 @@
+version: '2'
+services:
+    consul-server:
+        build:
+            context: .
+            dockerfile: ../docker/server/Dockerfile
+        ports:
+            - "127.0.0.1:8500:8500"
+        restart: always
+        command: consul agent -bootstrap -data-dir=/consul -server -ui -client='{{ GetInterfaceIP "eth0" }}' -bind='{{ GetInterfaceIP "eth0" }}'
+        expose:
+            - 8300
+            - 8301
+            - 8302
+            - 8500
+            - 8600
+    healthy-healthy-service:
+        build:
+            context: ./docker
+            dockerfile: Dockerfile-client
+        command: consul agent -retry-join=consul-server -enable-script-checks -config-dir=/etc/consul.d -data-dir=/consul -client='{{ GetInterfaceIP "eth0" }}' -bind='{{ GetInterfaceIP "eth0" }}'
+        environment:
+            - HEALTH_CHECK_1_VALUE=0
+            - HEALTH_CHECK_2_VALUE=0
+        expose:
+            - 8300
+            - 8301
+            - 8302
+            - 8500
+            - 8600
+    healthy-warning-service:
+        build:
+            context: ./docker
+            dockerfile: Dockerfile-client
+        command: consul agent -retry-join=consul-server -enable-script-checks -config-dir=/etc/consul.d -data-dir=/consul -client='{{ GetInterfaceIP "eth0" }}' -bind='{{ GetInterfaceIP "eth0" }}'
+        environment:
+            - HEALTH_CHECK_1_VALUE=0
+            - HEALTH_CHECK_2_VALUE=1
+        expose:
+            - 8300
+            - 8301
+            - 8302
+            - 8500
+            - 8600
+    healthy-critical-service:
+        build:
+            context: ./docker
+            dockerfile: Dockerfile-client
+        command: consul agent -retry-join=consul-server -enable-script-checks -config-dir=/etc/consul.d -data-dir=/consul -client='{{ GetInterfaceIP "eth0" }}' -bind='{{ GetInterfaceIP "eth0" }}'
+        environment:
+            - HEALTH_CHECK_1_VALUE=0
+            - HEALTH_CHECK_2_VALUE=2
+        expose:
+            - 8300
+            - 8301
+            - 8302
+            - 8500
+            - 8600
+    warning-warning-service:
+        build:
+            context: ./docker
+            dockerfile: Dockerfile-client
+        command: consul agent -retry-join=consul-server -enable-script-checks -config-dir=/etc/consul.d -data-dir=/consul -client='{{ GetInterfaceIP "eth0" }}' -bind='{{ GetInterfaceIP "eth0" }}'
+        environment:
+            - HEALTH_CHECK_1_VALUE=1
+            - HEALTH_CHECK_2_VALUE=1
+        expose:
+            - 8300
+            - 8301
+            - 8302
+            - 8500
+            - 8600
+    warning-critical-service:
+        build:
+            context: ./docker
+            dockerfile: Dockerfile-client
+        command: consul agent -retry-join=consul-server -enable-script-checks -config-dir=/etc/consul.d -data-dir=/consul -client='{{ GetInterfaceIP "eth0" }}' -bind='{{ GetInterfaceIP "eth0" }}'
+        environment:
+            - HEALTH_CHECK_1_VALUE=1
+            - HEALTH_CHECK_2_VALUE=2
+        expose:
+            - 8300
+            - 8301
+            - 8302
+            - 8500
+            - 8600
+    critical-critical-service:
+        build:
+            context: ./docker
+            dockerfile: Dockerfile-client
+        command: consul agent -retry-join=consul-server -enable-script-checks -config-dir=/etc/consul.d -data-dir=/consul -client='{{ GetInterfaceIP "eth0" }}' -bind='{{ GetInterfaceIP "eth0" }}'
+        environment:
+            - HEALTH_CHECK_1_VALUE=2
+            - HEALTH_CHECK_2_VALUE=2
+        expose:
+            - 8300
+            - 8301
+            - 8302
+            - 8500
+            - 8600

@@ -1,0 +1,13 @@
+FROM consul:1.4.0
+
+RUN mkdir -p /consul
+RUN chmod 777 /consul
+
+RUN mkdir /etc/consul.d
+RUN chmod 777 /etc/consul.d
+
+ADD service.hcl /etc/consul.d/service.hcl
+ADD health_check_1.sh /etc/consul.d/health_check_1.sh
+ADD health_check_2.sh /etc/consul.d/health_check_2.sh
+RUN chmod 777 /etc/consul.d/health_check_1.sh
+RUN chmod 777 /etc/consul.d/health_check_2.sh
